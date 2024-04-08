@@ -9,6 +9,7 @@ public class Vector3D : MonoBehaviour
     public Vector3 values;
     public GameObject EndModel;
     public Material material;
+    public bool localSpace = false;
     LineRenderer _lr;
 
 
@@ -26,9 +27,17 @@ public class Vector3D : MonoBehaviour
         //if( material != null ) {
         //    material.SetColor( "_Color", color ) ;
         //}
-        _lr.SetPosition( 0, transform.position );
-        _lr.SetPosition( 1, transform.position + values );
-        EndModel.transform.position = transform.position+values;
-        EndModel.transform.up = values;
+        if( localSpace ) {
+            _lr.SetPosition( 0, transform.position );
+            _lr.SetPosition( 1, transform.position + values );
+            EndModel.transform.localPosition = transform.position + values;
+            EndModel.transform.up = values;
+        } else {
+            _lr.SetPosition( 0, transform.position );
+            _lr.SetPosition( 1, transform.position + values );
+            EndModel.transform.position = transform.position + values;
+            EndModel.transform.up = values;
+        }
+        
     }
 }
