@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RFAUpdate : MonoBehaviour
 {
-    public Rigidbody piloteBody;
+    public Pilote pilote;
     public Transform CP;
     private Rigidbody rb;
     public AnimationCurve CzI;
@@ -28,10 +28,10 @@ public class RFAUpdate : MonoBehaviour
     }
 
     private void Update() {
-        Vector3 speed = (Quaternion.AngleAxis( incidence, transform.right ) * ComputedCorde).normalized * speedNorm;
+        Vector3 speed = rb.GetRelativePointVelocity( CP.localPosition );// (Quaternion.AngleAxis( incidence, transform.right ) * ComputedCorde).normalized * speedNorm;
         Vector3 trainee = -speed * CzI.Evaluate( incidence );
-        Vector3 portance = Vector3.Cross(speed, transform.right);
-        ComputedRFA = (piloteBody.transform.up).normalized * -1f;//portance + trainee;
+        Vector3 portance = Vector3.Cross( speed, transform.right ).normalized * Mathf.Sqrt( pilote.ComputedWeight  * pilote.ComputedWeight - trainee.magnitude * trainee.magnitude ); ;
+        ComputedRFA = portance + trainee;
 
         v3dDrag.values = trainee;
         v3dSpeed.values = speed;
@@ -41,8 +41,8 @@ public class RFAUpdate : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        CP.position = rb.centerOfMass + new Vector3 (0, 6f, 0);
-        //rb.AddForceAtPosition( ComputedRFA, CP.position );
+        //CP.position = rb.centerOfMass + new Vector3 (0, 6f, 0);
+        rb.AddForceAtPosition( ComputedRFA, CP.position );
         
     }
 }

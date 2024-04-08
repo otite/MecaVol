@@ -2,10 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteAlways]
 public class SystemCenterOfMass : MonoBehaviour
 {
-    public Rigidbody piloteBody;
+    public Pilote pilote;
     public Glider glider;
     public Rigidbody SystemBody;
 
@@ -16,13 +15,13 @@ public class SystemCenterOfMass : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if ( piloteBody == null || glider == null )
+        if ( pilote == null || glider == null )
         {
             return;
         }
-        transform.position = ( piloteBody.centerOfMass* piloteBody.mass+glider.CenterOfMass.transform.position* SystemBody.mass)/(piloteBody.mass+ SystemBody.mass);
+        transform.position = ( pilote.CenterOfMass.position * pilote.ComputedWeight + glider.CenterOfMass.transform.position* SystemBody.mass)/(pilote.ComputedWeight + SystemBody.mass);
         SystemBody.centerOfMass = transform.position;
     }
 }
