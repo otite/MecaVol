@@ -4,23 +4,22 @@ using UnityEngine;
 
 public class Pilote : MonoBehaviour
 {
-    public float Weight = 100f;
     public Transform CenterOfMass;
     public Transform SystemCenterOfMass;
     public Vector3D v3dApparentWeight, v3dFcent;
-    public float ComputedWeight => ApparentMassVectorKg.magnitude;
+    public float ComputedWeight => ApparentMassVector.magnitude;
 
     [Range( -1f, 1f )]
     public float MassControl = 0f;
-    private Vector3 ApparentMassVectorKg;
+    public Vector3 ApparentMassVector;
     public Rigidbody body;
     // Start is called before the first frame update
     void Awake()
     {
         body = GetComponent<Rigidbody>();
-        body.mass = Weight;
-        GetComponent<FixedJoint>().massScale = Weight;
-        GetComponent<FixedJoint>().connectedMassScale = 6f; //glider weight todo settings
+        body.mass = AppManager.Instance.settings.PiloteWeight;
+        //GetComponent<FixedJoint>().massScale = Weight;
+        //GetComponent<FixedJoint>().connectedMassScale = 6f; //glider weight todo settings
     }
 
     // Update is called once per frame
@@ -30,11 +29,11 @@ public class Pilote : MonoBehaviour
         body.centerOfMass = CenterOfMass.position;
         //vitesse angulaire w = vitesse car distance fixe entre cg systeme et pilote.
         //fcentrigue = mass*w*w*R
-        float forceCentrigugeKg = 0.1019716213f * body.mass * body.velocity.magnitude * body.velocity.magnitude * Vector3.Distance( body.centerOfMass, SystemCenterOfMass.position );
-        ApparentMassVectorKg = new Vector3(0,-body.mass, 0) + (body.centerOfMass - SystemCenterOfMass.position).normalized * forceCentrigugeKg; 
-        v3dApparentWeight.values = ApparentMassVectorKg;
+        float forceCentriguge = body.mass * AppManager.Instance.glider.body.angularVelocity.magnitude * AppManager.Instance.glider.body.angularVelocity.magnitude * Vector3.Distance(CenterOfMass.position, SystemCenterOfMass.position) ;
+        ApparentMassVector = body.mass * Physics.gravity.y * Vector3.up + (body.centerOfMass - SystemCenterOfMass.position).normalized * forceCentriguge; 
+        v3dApparentWeight.values = ApparentMassVector;
 
-        Vector3 FCent = (CenterOfMass.position - SystemCenterOfMass.position).normalized * forceCentrigugeKg;
+        Vector3 FCent = (CenterOfMass.position - SystemCenterOfMass.position).normalized * forceCentriguge;
         v3dFcent.transform.position = CenterOfMass.position;
         v3dFcent.values = FCent;
     }

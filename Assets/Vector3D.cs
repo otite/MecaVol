@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class Vector3D : MonoBehaviour
 {
     //public Color color = Color.white;
@@ -28,9 +27,9 @@ public class Vector3D : MonoBehaviour
         //}
         
             _lr.SetPosition( 0, transform.position );
-            _lr.SetPosition( 1, transform.position + values );
-            EndModel.transform.position = transform.position + values;
-            EndModel.transform.up = values;
+            _lr.SetPosition( 1, transform.position + values*AppManager.Instance.settings.Vectors3DScale );
+            EndModel.transform.position = transform.position + values * AppManager.Instance.settings.Vectors3DScale;
+            EndModel.transform.up = values * AppManager.Instance.settings.Vectors3DScale;
         
         
     }
