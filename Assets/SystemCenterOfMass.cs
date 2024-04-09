@@ -21,7 +21,7 @@ public class SystemCenterOfMass : MonoBehaviour
         {
             return;
         }
-        transform.position = ( pilote.CenterOfMass.position * pilote.ComputedWeight + glider.CenterOfMass.transform.position* SystemBody.mass)/(pilote.ComputedWeight + SystemBody.mass);
-        SystemBody.centerOfMass = transform.position;
+        transform.position = ( pilote.CenterOfMass.position * pilote.ComputedMass + glider.CenterOfMass.transform.position* SystemBody.mass)/(pilote.ComputedMass + SystemBody.mass);
+        SystemBody.centerOfMass = SystemBody.transform.InverseTransformPoint(transform.position);
     }
 }
