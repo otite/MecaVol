@@ -10,6 +10,7 @@ public class AppSettings : ScriptableObject
     public float GliderFinesse = 8f;
     public AnimationCurve GliderCzI;
     public AnimationCurve GliderCxCz;
+    //public AnimationCurve GliderSpeedI;
 
     [Header("Pilote")]
     public float PiloteWeight = 100f;

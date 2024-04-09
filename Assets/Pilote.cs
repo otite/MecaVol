@@ -14,7 +14,7 @@ public class Pilote : MonoBehaviour
     public Vector3 ApparentMassVector;
     public Rigidbody body;
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
         body = GetComponent<Rigidbody>();
         body.mass = AppManager.Instance.settings.PiloteWeight;

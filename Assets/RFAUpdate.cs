@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class RFAUpdate : MonoBehaviour
@@ -21,6 +22,16 @@ public class RFAUpdate : MonoBehaviour
     public Vector3D v3dSpeed;
     public Vector3D v3dPortance;
     public Vector3D v3dRFA;
+
+    [Header( "UI" )]
+    public TextMeshProUGUI speedText;
+    public TextMeshProUGUI speedVectorTxt;
+    public TextMeshProUGUI RFAMagText;
+    public TextMeshProUGUI RFAVectText;
+    public TextMeshProUGUI incidenceTxt;
+    public TextMeshProUGUI portanceMagTxt;
+    public TextMeshProUGUI portanceVectTxt;
+
     //tmp
 
     private void Awake()
@@ -47,8 +58,8 @@ public class RFAUpdate : MonoBehaviour
     private void FixedUpdate() {
         ComputedCorde = CordeAttaque.position - CordeFuite.position;
 
-        Vector3 speed = rb.GetPointVelocity(CP.position);
-        assiette = Vector3.SignedAngle(Vector3.ProjectOnPlane(speed, Vector3.up), speed, -transform.right);
+        Vector3 speed =  rb.GetPointVelocity(CP.position);
+        //assiette = Vector3.SignedAngle(Vector3.ProjectOnPlane(speed, Vector3.up), speed, -transform.right);
         incidence = Vector3.SignedAngle(ComputedCorde, speed, transform.right);
 
         float Cz = AppManager.Instance.settings.GliderCzI.Evaluate(incidence);
@@ -61,15 +72,23 @@ public class RFAUpdate : MonoBehaviour
 
         Vector3 trainee = -speed.normalized * TraineeMag;
         Vector3 portance = Vector3.Cross( speed, transform.right ).normalized * PortanceMag;
-        ComputedRFA = -pilote.ApparentMassVector.normalized * RFAMag;
+        ComputedRFA = (portance + trainee)*4f; //-pilote.ApparentMassVector.normalized * RFAMag;
 
         v3dDrag.values = trainee;
         v3dSpeed.values = speed;
         v3dPortance.values = portance;
         v3dRFA.values = ComputedRFA;
 
-        //rb.AddForceAtPosition(ComputedRFA, CP.position);
-        rb.AddForce(ComputedRFA);
+        speedText.text = speed.magnitude.ToString();
+        speedVectorTxt.text = speed.ToString();
+        RFAMagText.text = RFAMag.ToString();
+        RFAVectText.text = ComputedRFA.ToString();
+        incidenceTxt.text = incidence.ToString();
+        portanceMagTxt.text = PortanceMag.ToString();
+        portanceVectTxt.text = portance.ToString();
+
+        rb.AddForceAtPosition(ComputedRFA, CP.position);
+        //rb.AddForce(ComputedRFA);
     }
     
 }
