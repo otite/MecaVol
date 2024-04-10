@@ -7,7 +7,7 @@ public class RFAUpdate : MonoBehaviour
 {
     public SystemCenterOfMass systemCenterOfMass;
     public Pilote pilote;
-    public Transform CP;
+    public CentrePoussee CP;
     private Rigidbody rb;
     public Transform CordeFuite, CordeAttaque;
     public float InitialSpeed = 8;
@@ -56,7 +56,7 @@ public class RFAUpdate : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        previousCPPos = CP.position;
+        previousCPPos = CP.transform.position;
     }
     private void Update()
     {
@@ -76,13 +76,14 @@ public class RFAUpdate : MonoBehaviour
         }
         else
         {
-            speed =  rb.GetPointVelocity(CP.position);
+            speed =  rb.GetPointVelocity(CP.transform.position );
             //speed = (CP.position - previousCPPos) / Time.deltaTime;
-            previousCPPos = CP.position;
+            previousCPPos = CP.transform.position;
         }
 
 
         incidence = Vector3.SignedAngle(ComputedCorde, speed, transform.right);
+        CP.UpdatePosition( incidence );
         float Cz = AppManager.Instance.settings.GliderCzI.Evaluate(incidence);
         float Cx = AppManager.Instance.settings.GliderCxI.Evaluate(incidence);
 
@@ -118,7 +119,7 @@ public class RFAUpdate : MonoBehaviour
         else
         {
             //rb.AddForce(ComputedRFA);
-            rb.AddForceAtPosition(ComputedRFA, CP.position, ForceMode.Force);
+            rb.AddForceAtPosition(ComputedRFA, CP.transform.position, ForceMode.Force);
             //rb.AddForceAtPosition(pilote.ApparentMassVector, pilote.CenterOfMass.position, ForceMode.Acceleration);
         }
         //rb.AddForce(ComputedRFA);

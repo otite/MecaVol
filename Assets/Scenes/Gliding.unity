@@ -1388,6 +1388,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 666330239}
+  - component: {fileID: 666330240}
   m_Layer: 0
   m_Name: CP
   m_TagString: Untagged
@@ -1404,7 +1405,7 @@ Transform:
   m_GameObject: {fileID: 666330238}
   serializedVersion: 2
   m_LocalRotation: {x: 2.8421713e-14, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.7, z: 0.43}
+  m_LocalPosition: {x: 0, y: 0, z: 0.43}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1415,6 +1416,42 @@ Transform:
   - {fileID: 868310415}
   m_Father: {fileID: 7926107356409257475}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &666330240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666330238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23486af1cd9ef4f45ab2191af64a5a21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ZfI:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -20
+      value: -1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 90
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &696757569
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4358,7 +4395,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 96
   m_CollisionDetection: 0
 --- !u!114 &5741203040289483345
 MonoBehaviour:
@@ -4374,7 +4411,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemCenterOfMass: {fileID: 1179437123}
   pilote: {fileID: 355813268}
-  CP: {fileID: 666330239}
+  CP: {fileID: 666330240}
   CordeFuite: {fileID: 814559880}
   CordeAttaque: {fileID: 645119940}
   InitialSpeed: 8
