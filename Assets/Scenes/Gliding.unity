@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028349, g: 0.22571358, b: 0.3069225, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -973,6 +973,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CenterOfMass: {fileID: 630410594}
+  speed: {x: 0, y: 0, z: 0}
   SystemCenterOfMass: {fileID: 1179437122}
   v3dApparentWeight: {fileID: 1848063198}
   v3dFcent: {fileID: 696757570}
@@ -2542,7 +2543,7 @@ Transform:
   m_GameObject: {fileID: 1179437121}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.013670802, y: -2.5, z: 0.012423277}
+  m_LocalPosition: {x: 0.013670802, y: -2.5, z: 0.57}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2564,6 +2565,7 @@ MonoBehaviour:
   pilote: {fileID: 355813268}
   glider: {fileID: 1686128875}
   SystemBody: {fileID: 5741203040289483344}
+  speed: {x: 0, y: 0, z: 0}
 --- !u!1 &1198157694
 GameObject:
   m_ObjectHideFlags: 0
@@ -4340,9 +4342,9 @@ Rigidbody:
   m_GameObject: {fileID: 5741203040289483343}
   serializedVersion: 4
   m_Mass: 6
-  m_Drag: 2
+  m_Drag: 0
   m_AngularDrag: 0
-  m_CenterOfMass: {x: 0.013670802, y: 3.323543, z: 0.012423277}
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
@@ -4356,7 +4358,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 96
+  m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!114 &5741203040289483345
 MonoBehaviour:
@@ -4370,7 +4372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdd7c32b2559a9d4c8312656e15f915c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SystemCenterOfMass: {fileID: 1179437122}
+  systemCenterOfMass: {fileID: 1179437123}
   pilote: {fileID: 355813268}
   CP: {fileID: 666330239}
   CordeFuite: {fileID: 814559880}

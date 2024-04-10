@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class RFAUpdate : MonoBehaviour
 {
-    public Transform SystemCenterOfMass;
+    public SystemCenterOfMass systemCenterOfMass;
     public Pilote pilote;
     public Transform CP;
     private Rigidbody rb;
@@ -36,7 +36,7 @@ public class RFAUpdate : MonoBehaviour
     [Header("Simulate")]
     public bool Simulate;
     public Vector3 SimulatedSpeed;
-    public float SimulatedIncidence = 6f;
+    public float SimulatedIncidence = 8f;
 
     private Vector3 previousCPPos;
 
@@ -62,10 +62,12 @@ public class RFAUpdate : MonoBehaviour
     {
         Time.timeScale = AppManager.Instance.settings.slowMotionTimescale;
         Time.fixedDeltaTime = startFixedDeltaTime * AppManager.Instance.settings.slowMotionTimescale;
+
+        ComputedCorde = CordeAttaque.position - CordeFuite.position;
     }
 
     private void FixedUpdate() {
-        ComputedCorde = CordeAttaque.position - CordeFuite.position;
+        
 
         Vector3 speed;//, gliderSpeed ;
         if (Simulate)
@@ -74,26 +76,20 @@ public class RFAUpdate : MonoBehaviour
         }
         else
         {
-            //speed =  rb.GetPointVelocity(CP.position);
-            
-
-            speed = (CP.position - previousCPPos) / Time.deltaTime;
+            speed =  rb.GetPointVelocity(CP.position);
+            //speed = (CP.position - previousCPPos) / Time.deltaTime;
             previousCPPos = CP.position;
         }
 
-        //gliderSpeed = (CP.position - previousCPPos) / Time.deltaTime;
-        //previousCPPos = CP.position;
 
         incidence = Vector3.SignedAngle(ComputedCorde, speed, transform.right);
-        //assiette = Vector3.SignedAngle(Vector3.ProjectOnPlane(speed, Vector3.up), speed, -transform.right);
-
         float Cz = AppManager.Instance.settings.GliderCzI.Evaluate(incidence);
         float Cx = AppManager.Instance.settings.GliderCxI.Evaluate(incidence);
 
         float PortanceMag = 0.5f * AppManager.Instance.settings.AirDensity.Evaluate(AppManager.Instance.settings.AirTemperature) * AppManager.Instance.settings.GliderSurface * speed.magnitude * speed.magnitude * Cz;
         //if (PortanceMag <= 0f) PortanceMag = 0f;
         float TraineeMag = 0.5f * AppManager.Instance.settings.AirDensity.Evaluate(AppManager.Instance.settings.AirTemperature) * AppManager.Instance.settings.GliderSurface * speed.magnitude * speed.magnitude * Cx;
-        rb.drag = TraineeMag/9.81f;
+        //rb.drag = TraineeMag/9.81f;
         //rb.angularDrag = TraineeMag / 9.81f;
         float RFAMag = Mathf.Sqrt(PortanceMag * PortanceMag + TraineeMag * TraineeMag);
 

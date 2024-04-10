@@ -5,6 +5,7 @@ using UnityEngine;
 public class Pilote : MonoBehaviour
 {
     public Transform CenterOfMass;
+    public Vector3 speed;
     public Transform SystemCenterOfMass;
     public Vector3D v3dApparentWeight, v3dFcent, v3dSpeed;
     public float ComputedMass;
@@ -31,16 +32,25 @@ public class Pilote : MonoBehaviour
     {
         CenterOfMass.localPosition = new Vector3(MassControl, 0f, 0f);
 
-        Vector3 velocity = (transform.position - previousPosition) / Time.deltaTime;
+        speed = (transform.position - previousPosition) / Time.deltaTime;
         previousPosition = transform.position;
 
-        body.centerOfMass = CenterOfMass.position;
+        
+
+        body.centerOfMass = body.transform.InverseTransformDirection( CenterOfMass.position - body.transform.position);
+        Debug.DrawLine( body.position, body.worldCenterOfMass, Color.red );
+
+
         //vitesse angulaire w = vitesse car distance fixe entre cg systeme et pilote.
         //fcentrigue = mass*w*w*R
-        float forceCentriguge = body.mass * velocity.magnitude * velocity.magnitude * Vector3.Distance(CenterOfMass.position, SystemCenterOfMass.position) ;
+        float forceCentriguge = body.mass * speed.magnitude * speed.magnitude * Vector3.Distance(CenterOfMass.position, SystemCenterOfMass.position) ;
         ApparentMassVector = body.mass * -Vector3.up;// + (body.centerOfMass - SystemCenterOfMass.position).normalized * forceCentriguge / 9.81f;
         ComputedMass = ApparentMassVector.magnitude;
         body.mass = ComputedMass;
+
+        //body.velocity = speed;
+        //body.AddForce( ApparentMassVector );
+
 
         v3dApparentWeight.values = ApparentMassVector;
 
@@ -49,6 +59,8 @@ public class Pilote : MonoBehaviour
         v3dFcent.values = FCent;
 
         
-        v3dSpeed.values = velocity;
+        v3dSpeed.values = speed;
+
+
     }
 }

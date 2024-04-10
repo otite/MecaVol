@@ -5,6 +5,7 @@ using UnityEngine;
 public class TestCM : MonoBehaviour
 {
     public Rigidbody b1, b2;
+    public Transform CP;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +19,8 @@ public class TestCM : MonoBehaviour
         b1.centerOfMass = b1.transform.InverseTransformPoint(transform.position);
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            b2.AddForce(new Vector3(-1000, 0, 0));
+            b2.AddForce(new Vector3(-10000, 0, 0));
         }
+        b1.AddForceAtPosition((b1.mass+b2.mass)*-Physics.gravity.y*Vector3.up, CP.position);
     }
 }
