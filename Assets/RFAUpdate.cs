@@ -100,7 +100,7 @@ public class RFAUpdate : MonoBehaviour
             previousCPPos = CP.transform.position;
         }
 
-
+       
         incidence = Vector3.SignedAngle(ComputedCorde, Speed, transform.right);
         CP.UpdatePosition( incidence, 0f );
         float Cz = AppManager.Instance.settings.GliderCzI.Evaluate(incidence);

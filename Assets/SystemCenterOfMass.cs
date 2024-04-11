@@ -7,6 +7,7 @@ public class SystemCenterOfMass : MonoBehaviour
     public Pilote pilote;
     public Glider glider;
     public Rigidbody SystemBody;
+    public CentrePoussee CP;
     public Vector3 speed;
     public Vector3D v3dSpeed;
 
@@ -50,14 +51,15 @@ public class SystemCenterOfMass : MonoBehaviour
         Vector3 p2Com = transform.position - pilote.CenterOfMass.position;
         Vector3 com2gDir = Vector3.Reflect( p2Com, glider.transform.right );
         // Does the ray intersect any objects excluding the player layer
-        if( Physics.Raycast( transform.position, transform.TransformDirection( com2gDir ), out hit, Mathf.Infinity ) ) {
-            Debug.DrawRay( transform.position, transform.TransformDirection( Vector3.forward ) * hit.distance, Color.yellow );
-            Debug.Log( "Did Hit" );
+        if( Physics.Raycast( transform.position, /*transform.TransformDirection( com2gDir )*/ Vector3.ProjectOnPlane(pilote.CenterOfMass.up, Vector3.right), out hit, Mathf.Infinity ) ) {
+            Debug.DrawRay( transform.position, Vector3.ProjectOnPlane( pilote.CenterOfMass.up, Vector3.right ) * hit.distance, Color.yellow );
+            //Debug.Log( "Did Hit" );
         } else {
-            Debug.DrawRay( transform.position, transform.TransformDirection( Vector3.forward ) * 1000, Color.white );
-            Debug.Log( "Did not Hit" );
+            Debug.DrawRay( transform.position, Vector3.ProjectOnPlane( pilote.CenterOfMass.up, Vector3.right ) * 1000, Color.white );
+            //Debug.Log( "Did not Hit" );
         }
         DebugTrs.position = hit.point;
+        //CP.transform.position = hit.point;
         return 0f;
     }
 }

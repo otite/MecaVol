@@ -22,7 +22,7 @@ public class CentrePoussee : MonoBehaviour
         
     }
     public void UpdatePosition(float incidence, float roulis ) {
-        _roulis = roulis;
+        //_roulis = roulis;
         transform.localPosition = initialLocalPosition + new Vector3( XfI.Evaluate( roulis ), ZfI.Evaluate(incidence),0);
     }
 
