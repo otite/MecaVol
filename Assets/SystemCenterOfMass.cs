@@ -18,31 +18,30 @@ public class SystemCenterOfMass : MonoBehaviour
         oldPosition = transform.position;
     }
 
-    // Start is called before the first frame update
-    void Update()
+
+    private void Update()
     {
-        if( pilote == null || glider == null ) {
-            return;
-        }
-        
+        transform.position = ( pilote.CenterOfMass.position + ( glider.body.mass / ( glider.body.mass + pilote.body.mass ) ) * ( glider.CenterOfMass.position - pilote.CenterOfMass.position ));// ( pilote.CenterOfMass.position * pilote.ComputedMass + glider.CenterOfMass.transform.position * SystemBody.mass)/(pilote.ComputedMass + SystemBody.mass);
+        SystemBody.centerOfMass = SystemBody.transform.InverseTransformDirection(transform.position - SystemBody.position);
 
     }
-
     // Update is called once per frame
     void FixedUpdate()
     {
-        if ( pilote == null || glider == null )
-        {
-            return;
-        }
-        transform.position = pilote.CenterOfMass.position + ( glider.body.mass / ( glider.body.mass + pilote.body.mass ) ) * ( glider.CenterOfMass.position - pilote.CenterOfMass.position );// ( pilote.CenterOfMass.position * pilote.ComputedMass + glider.CenterOfMass.transform.position * SystemBody.mass)/(pilote.ComputedMass + SystemBody.mass);
-        SystemBody.centerOfMass = SystemBody.transform.InverseTransformDirection( transform.position - SystemBody.position );
-        Debug.DrawLine( SystemBody.position, SystemBody.worldCenterOfMass, Color.green );
-        speed = (transform.position - oldPosition)/Time.deltaTime;
-        oldPosition = transform.position;
-        v3dSpeed.values = speed;
 
-        ProcessraycastPositioning();
+
+        //speed = body.velocity;
+        //speed = (transform.position - oldPosition)/Time.deltaTime;
+        //oldPosition = transform.position;
+        //v3dSpeed.values = speed;
+
+        //transform.position = ( pilote.CenterOfMass.position + ( glider.body.mass / ( glider.body.mass + pilote.body.mass ) ) * ( glider.CenterOfMass.position - pilote.CenterOfMass.position ));// ( pilote.CenterOfMass.position * pilote.ComputedMass + glider.CenterOfMass.transform.position * SystemBody.mass)/(pilote.ComputedMass + SystemBody.mass);
+        //transform.localPosition += new Vector3(0, 0, .25f);
+        Debug.DrawLine( SystemBody.position, SystemBody.worldCenterOfMass, Color.green );
+
+        
+
+        //ProcessraycastPositioning();
     }
 
     private float ProcessraycastPositioning() {
@@ -59,7 +58,7 @@ public class SystemCenterOfMass : MonoBehaviour
             //Debug.Log( "Did not Hit" );
         }
         DebugTrs.position = hit.point;
-        //CP.transform.position = hit.point;
+        CP.transform.position = hit.point;
         return 0f;
     }
 }

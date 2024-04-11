@@ -12,16 +12,17 @@ public class RFAUpdate : MonoBehaviour
     private Rigidbody rb;
     public Transform CordeFuite, CordeAttaque;
     public float InitialSpeed = 8;
-
+    [Range(0,20)]
+    public float Brake;
     public float roulis;
 
     private Vector3 ComputedRFA;
     private Vector3 ComputedCorde;
     private Vector3 Trainee, Portance;
-    Vector3 Speed;
     private float assiette;
-    private float incidence = 7f;
+    public float incidence = 7f;
     private float startFixedDeltaTime;
+    Vector3 Speed;
 
     [Header( "Vectors 3d" )]
     public Vector3D v3dDrag;
@@ -96,7 +97,7 @@ public class RFAUpdate : MonoBehaviour
         else
         {
             Speed =  rb.GetPointVelocity(CP.transform.position );
-            //speed = (CP.position - previousCPPos) / Time.deltaTime;
+            //Speed = (CP.transform.position - previousCPPos) / Time.deltaTime;
             previousCPPos = CP.transform.position;
         }
 
@@ -128,6 +129,7 @@ public class RFAUpdate : MonoBehaviour
         {
             //rb.AddForce(ComputedRFA);
             rb.AddForceAtPosition(ComputedRFA, CP.transform.position, ForceMode.Force);
+            rb.AddForceAtPosition(-ComputedCorde.normalized * Brake * Speed.magnitude, CP.transform.position, ForceMode.Force);
             //rb.AddForceAtPosition(pilote.ApparentMassVector, pilote.CenterOfMass.position, ForceMode.Acceleration);
         }
         //rb.AddForce(ComputedRFA);

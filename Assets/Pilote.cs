@@ -24,8 +24,6 @@ public class Pilote : MonoBehaviour
         previousPosition = transform.position;
         body = GetComponent<Rigidbody>();
         body.mass = AppManager.Instance.settings.PiloteWeight;
-        //GetComponent<FixedJoint>().massScale = Weight;
-        //GetComponent<FixedJoint>().connectedMassScale = 6f; //glider weight todo settings
     }
 
     // Update is called once per frame
@@ -35,35 +33,27 @@ public class Pilote : MonoBehaviour
         body.centerOfMass = body.transform.InverseTransformDirection( CenterOfMass.position - body.transform.position);
         Debug.DrawLine( body.position, body.worldCenterOfMass, Color.red );
 
+        speed = body.velocity;
+        //speed = (transform.position - previousPosition) / Time.deltaTime;
+        //previousPosition = transform.position;
 
-        speed = (transform.position - previousPosition) / Time.deltaTime;
-        previousPosition = transform.position;
-
-        //float w = Vector3.Angle( speed, previousVelocity );
-        //previousVelocity = speed;
 
         //vitesse relative tangantielle par rapport au com
         Vector3 relativeSpeed = Vector3.ProjectOnPlane(speed - SystemCenterOfMass.speed, ( body.centerOfMass - SystemCenterOfMass.transform.position ).normalized );
    
         //vitesse angulaire w = vitesse car distance fixe entre cg systeme et pilote.
         //fcentrigue = mass*w*w*R
-        float forceCentrifuge = body.mass * relativeSpeed.magnitude * relativeSpeed.magnitude / Vector3.Distance(CenterOfMass.position, SystemCenterOfMass.transform.position) ;
-        Vector3 FCent = (CenterOfMass.position - SystemCenterOfMass.transform.position).normalized * forceCentrifuge;
+        //float forceCentrifuge = body.mass * relativeSpeed.magnitude * relativeSpeed.magnitude / Vector3.Distance(CenterOfMass.position, SystemCenterOfMass.transform.position) ;
+        //Vector3 FCent = (CenterOfMass.position - SystemCenterOfMass.transform.position).normalized * forceCentrifuge;
 
-        ApparentMassVector = body.mass * Physics.gravity.y * Vector3.up + FCent;
+        ApparentMassVector = body.mass * Physics.gravity.y * Vector3.up;// + FCent;
+
         ComputedMass = ApparentMassVector.magnitude / -Physics.gravity.y;
-        //body.AddForce( FCent, ForceMode.Acceleration);
-        //body.velocity = speed;
-        //body.AddForce( ApparentMassVector );
-
 
         v3dApparentWeight.values = ApparentMassVector;
-
-        v3dFcent.transform.position = CenterOfMass.position;
-        v3dFcent.values = FCent*200f;
-
-        
-        v3dSpeed.values = speed;
+        //v3dFcent.transform.position = CenterOfMass.position;
+        //v3dFcent.values = FCent*200f;
+        //v3dSpeed.values = speed;
 
 
     }
