@@ -5,6 +5,9 @@ using UnityEngine;
 public class CentrePoussee : MonoBehaviour
 {
     public AnimationCurve ZfI;
+    public AnimationCurve XfI;
+
+    public float _roulis;
 
     private Vector3 initialLocalPosition;
     // Start is called before the first frame update
@@ -18,7 +21,10 @@ public class CentrePoussee : MonoBehaviour
     {
         
     }
-    public void UpdatePosition(float incidence ) {
-        transform.localPosition = initialLocalPosition + new Vector3(0,ZfI.Evaluate(incidence),0);
+    public void UpdatePosition(float incidence, float roulis ) {
+        _roulis = roulis;
+        transform.localPosition = initialLocalPosition + new Vector3( XfI.Evaluate( roulis ), ZfI.Evaluate(incidence),0);
     }
+
+    
 }

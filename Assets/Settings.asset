@@ -208,4 +208,4 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   Vectors3DScale: 0.05
-  slowMotionTimescale: 1
+  slowMotionTimescale: 0.1

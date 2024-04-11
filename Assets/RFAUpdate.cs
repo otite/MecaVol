@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class RFAUpdate : MonoBehaviour
@@ -12,8 +13,12 @@ public class RFAUpdate : MonoBehaviour
     public Transform CordeFuite, CordeAttaque;
     public float InitialSpeed = 8;
 
+    public float roulis;
+
     private Vector3 ComputedRFA;
     private Vector3 ComputedCorde;
+    private Vector3 Trainee, Portance;
+    Vector3 Speed;
     private float assiette;
     private float incidence = 7f;
     private float startFixedDeltaTime;
@@ -64,53 +69,56 @@ public class RFAUpdate : MonoBehaviour
         Time.fixedDeltaTime = startFixedDeltaTime * AppManager.Instance.settings.slowMotionTimescale;
 
         ComputedCorde = CordeAttaque.position - CordeFuite.position;
+        roulis = Vector3.SignedAngle( transform.up, Vector3.up, transform.forward );
+
+        v3dDrag.values = Trainee;
+        v3dSpeed.values = Speed;
+        v3dPortance.values = Portance;
+        v3dRFA.values = ComputedRFA;
+
+        speedText.text = Speed.magnitude.ToString();
+        speedVectorTxt.text = Speed.ToString();
+        RFAMagText.text = ComputedRFA.magnitude.ToString();
+        RFAVectText.text = ComputedRFA.ToString();
+        incidenceTxt.text = incidence.ToString();
+        portanceMagTxt.text = Portance.magnitude.ToString();
+        portanceVectTxt.text = Portance.ToString();
     }
 
     private void FixedUpdate() {
         
 
-        Vector3 speed;//, gliderSpeed ;
+        //, gliderSpeed ;
         if (Simulate)
         {
-            speed = SimulatedSpeed;
+            Speed = SimulatedSpeed;
         }
         else
         {
-            speed =  rb.GetPointVelocity(CP.transform.position );
+            Speed =  rb.GetPointVelocity(CP.transform.position );
             //speed = (CP.position - previousCPPos) / Time.deltaTime;
             previousCPPos = CP.transform.position;
         }
 
 
-        incidence = Vector3.SignedAngle(ComputedCorde, speed, transform.right);
-        CP.UpdatePosition( incidence );
+        incidence = Vector3.SignedAngle(ComputedCorde, Speed, transform.right);
+        CP.UpdatePosition( incidence, 0f );
         float Cz = AppManager.Instance.settings.GliderCzI.Evaluate(incidence);
         float Cx = AppManager.Instance.settings.GliderCxI.Evaluate(incidence);
 
-        float PortanceMag = 0.5f * AppManager.Instance.settings.AirDensity.Evaluate(AppManager.Instance.settings.AirTemperature) * AppManager.Instance.settings.GliderSurface * speed.magnitude * speed.magnitude * Cz;
+        float PortanceMag = 0.5f * AppManager.Instance.settings.AirDensity.Evaluate(AppManager.Instance.settings.AirTemperature) * AppManager.Instance.settings.GliderSurface * Speed.magnitude * Speed.magnitude * Cz;
         //if (PortanceMag <= 0f) PortanceMag = 0f;
-        float TraineeMag = 0.5f * AppManager.Instance.settings.AirDensity.Evaluate(AppManager.Instance.settings.AirTemperature) * AppManager.Instance.settings.GliderSurface * speed.magnitude * speed.magnitude * Cx;
+        float TraineeMag = 0.5f * AppManager.Instance.settings.AirDensity.Evaluate(AppManager.Instance.settings.AirTemperature) * AppManager.Instance.settings.GliderSurface * Speed.magnitude * Speed.magnitude * Cx;
         //rb.drag = TraineeMag/9.81f;
         //rb.angularDrag = TraineeMag / 9.81f;
-        float RFAMag = Mathf.Sqrt(PortanceMag * PortanceMag + TraineeMag * TraineeMag);
+        //float RFAMag = Mathf.Sqrt(PortanceMag * PortanceMag + TraineeMag * TraineeMag);
 
 
-        Vector3 trainee = -speed.normalized * TraineeMag;
-        Vector3 portance = Vector3.Cross( speed, transform.right ).normalized * PortanceMag;
-        ComputedRFA = portance + trainee;// -pilote.ApparentMassVector.normalized * RFAMag;
+        Trainee = -Speed.normalized * TraineeMag;
+        Portance = Vector3.Cross( Speed, transform.right ).normalized * PortanceMag;
+        ComputedRFA = Portance + Trainee;// -pilote.ApparentMassVector.normalized * RFAMag;
 
-        v3dDrag.values = trainee;
-        v3dSpeed.values = speed;
-        v3dPortance.values = portance;
-        v3dRFA.values = ComputedRFA;
-
-        speedText.text = speed.magnitude.ToString();
-        speedVectorTxt.text = speed.ToString();
-        RFAMagText.text = ComputedRFA.magnitude.ToString();
-        RFAVectText.text = ComputedRFA.ToString();
-        incidenceTxt.text = incidence.ToString();
-        portanceMagTxt.text = PortanceMag.ToString();
-        portanceVectTxt.text = portance.ToString();
+       
 
         if (Simulate)
         {

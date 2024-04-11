@@ -20,7 +20,7 @@ public class Vector3D : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         if( _lr == null ) return;
         //if( material != null ) {
@@ -31,7 +31,7 @@ public class Vector3D : MonoBehaviour
             _lr.SetPosition( 1, transform.position + values*AppManager.Instance.settings.Vectors3DScale );
             EndModel.transform.position = transform.position + values * AppManager.Instance.settings.Vectors3DScale;
             EndModel.transform.up = values * AppManager.Instance.settings.Vectors3DScale;
-        magnitude = values.magnitude;
+            magnitude = values.magnitude;
 
 
     }

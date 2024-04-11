@@ -79,6 +79,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0243a76645c255f40b87d3eb421bb432, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  magnitude: 0
   values: {x: 0, y: 2.36, z: 0.78}
   EndModel: {fileID: 2020806928922888679}
   material: {fileID: 2100000, guid: 62a3d2ce858c9b640b8e9d0d0a6143b1, type: 2}
@@ -135,7 +136,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.091602325
+        value: 0.051761627
         inSlope: 0
         outSlope: 0
         tangentMode: 0
