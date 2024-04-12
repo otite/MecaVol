@@ -129,7 +129,7 @@ public class RFAUpdate : MonoBehaviour
         {
             //rb.AddForce(ComputedRFA);
             rb.AddForceAtPosition(ComputedRFA, CP.transform.position, ForceMode.Force);
-            rb.AddForceAtPosition(-ComputedCorde.normalized * Brake * Speed.magnitude, CP.transform.position, ForceMode.Force);
+            rb.AddForceAtPosition(Vector3.Project(-ComputedCorde.normalized * Brake * Speed.magnitude,  Trainee), CP.transform.position, ForceMode.Force);
             //rb.AddForceAtPosition(pilote.ApparentMassVector, pilote.CenterOfMass.position, ForceMode.Acceleration);
         }
         //rb.AddForce(ComputedRFA);
