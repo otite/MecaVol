@@ -8,6 +8,10 @@ public class ColorPropertySetter : MonoBehaviour
     //The material property block we pass to the GPU
     private MaterialPropertyBlock propertyBlock;
 
+    private void Start()
+    {
+        OnValidate();
+    }
     // OnValidate is called in the editor after the component is edited
     void OnValidate() {
         //create propertyblock only if none exists

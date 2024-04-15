@@ -17,10 +17,11 @@ public class TestCM : MonoBehaviour
     {
         transform.position = (b1.position * b1.mass + b2.position * b2.mass) / (b1.mass + b2.mass);
         b1.centerOfMass = b1.transform.InverseTransformPoint(transform.position);
+        Debug.DrawLine(b1.transform.position, b1.worldCenterOfMass);
         if (Input.GetKeyDown(KeyCode.Space))
         {
             b2.AddForce(new Vector3(-10000, 0, 0));
         }
-        b1.AddForceAtPosition((b1.mass+b2.mass)*-Physics.gravity.y*Vector3.up, CP.position);
+        b1.AddForceAtPosition((b1.mass+b2.mass)*-Physics.gravity.y*Vector3.up, b1.transform.position);
     }
 }

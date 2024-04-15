@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class RFAUpdate : MonoBehaviour
@@ -10,10 +9,12 @@ public class RFAUpdate : MonoBehaviour
     public Pilote pilote;
     public CentrePoussee CP;
     private Rigidbody rb;
-    public Transform CordeFuite, CordeAttaque;
+    public Transform CordeFuite, CordeAttaque, RightBrakePoint, LeftBrakePoint;
     public float InitialSpeed = 8;
-    [Range(0,20)]
-    public float Brake;
+    [Range(0,500)]
+    public float RightBrake;
+    [Range(0, 500)]
+    public float LeftBrake;
     public float roulis;
 
     private Vector3 ComputedRFA;
@@ -36,6 +37,7 @@ public class RFAUpdate : MonoBehaviour
     public TextMeshProUGUI RFAMagText;
     public TextMeshProUGUI RFAVectText;
     public TextMeshProUGUI incidenceTxt;
+    public TextMeshProUGUI roulisTxt;
     public TextMeshProUGUI portanceMagTxt;
     public TextMeshProUGUI portanceVectTxt;
 
@@ -69,21 +71,20 @@ public class RFAUpdate : MonoBehaviour
         Time.timeScale = AppManager.Instance.settings.slowMotionTimescale;
         Time.fixedDeltaTime = startFixedDeltaTime * AppManager.Instance.settings.slowMotionTimescale;
 
-        ComputedCorde = CordeAttaque.position - CordeFuite.position;
-        roulis = Vector3.SignedAngle( transform.up, Vector3.up, transform.forward );
 
         v3dDrag.values = Trainee;
         v3dSpeed.values = Speed;
         v3dPortance.values = Portance;
         v3dRFA.values = ComputedRFA;
 
-        speedText.text = Speed.magnitude.ToString();
+        speedText.text = (Speed.magnitude*3.6f).ToString() + " km/h";
         speedVectorTxt.text = Speed.ToString();
         RFAMagText.text = ComputedRFA.magnitude.ToString();
         RFAVectText.text = ComputedRFA.ToString();
-        incidenceTxt.text = incidence.ToString();
+        incidenceTxt.text = "Incidence : "+incidence.ToString();
         portanceMagTxt.text = Portance.magnitude.ToString();
         portanceVectTxt.text = Portance.ToString();
+        roulisTxt.text = "Roulis : "+roulis.ToString();
     }
 
     private void FixedUpdate() {
@@ -101,9 +102,10 @@ public class RFAUpdate : MonoBehaviour
             previousCPPos = CP.transform.position;
         }
 
-       
-        incidence = Vector3.SignedAngle(ComputedCorde, Speed, transform.right);
-        CP.UpdatePosition( incidence, 0f );
+        ComputedCorde = CordeAttaque.position - CordeFuite.position;
+        roulis = Vector3.SignedAngle(transform.up, Vector3.ProjectOnPlane(Vector3.up, transform.forward), transform.forward);
+        incidence = Vector3.SignedAngle(ComputedCorde, Vector3.ProjectOnPlane(Speed,transform.right), transform.right);
+        CP.UpdatePosition( incidence, roulis );
         float Cz = AppManager.Instance.settings.GliderCzI.Evaluate(incidence);
         float Cx = AppManager.Instance.settings.GliderCxI.Evaluate(incidence);
 
@@ -129,7 +131,16 @@ public class RFAUpdate : MonoBehaviour
         {
             //rb.AddForce(ComputedRFA);
             rb.AddForceAtPosition(ComputedRFA, CP.transform.position, ForceMode.Force);
-            rb.AddForceAtPosition(Vector3.Project(-ComputedCorde.normalized * Brake * Speed.magnitude,  Trainee), CP.transform.position, ForceMode.Force);
+
+            rb.AddForceAtPosition(Vector3.Project(-ComputedCorde.normalized * RightBrake * Speed.magnitude, Trainee), RightBrakePoint.position, ForceMode.Force);
+            rb.AddTorque(transform.up * RightBrake );
+
+            rb.AddForceAtPosition(Vector3.Project(-ComputedCorde.normalized * LeftBrake * Speed.magnitude, Trainee), LeftBrakePoint.position, ForceMode.Force);
+            rb.AddTorque(transform.up * -LeftBrake);
+
+
+            rb.AddTorque(transform.up * roulis * 50f);
+
             //rb.AddForceAtPosition(pilote.ApparentMassVector, pilote.CenterOfMass.position, ForceMode.Acceleration);
         }
         //rb.AddForce(ComputedRFA);
