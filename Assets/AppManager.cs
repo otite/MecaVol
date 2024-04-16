@@ -6,9 +6,6 @@ public class AppManager : MonoBehaviour
 {
     public static AppManager Instance;
 
-    public Glider glider;
-    public Pilote pilote;
-
     public AppSettings settings;
     private void Awake()
     {
@@ -20,16 +17,5 @@ public class AppManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
