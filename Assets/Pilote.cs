@@ -4,24 +4,19 @@ using UnityEngine;
 
 public class Pilote : MonoBehaviour
 {
-    public Transform CenterOfMass;
-    public Vector3 speed, angularSpeed;
-    public Rigidbody SCOM;
-    public Vector3D v3dApparentWeight, v3dFcent, v3dSpeed;
-    public float ComputedMass;
-
+  
     [Range( -1f, 1f )]
     public float MassControl = 0f;
-    public Vector3 ApparentMassVector;
+    
     private Rigidbody body;
-
+    
 
 
     // Start is called before the first frame update
     void Awake()
     {
         body = GetComponent<Rigidbody>();
-        body.mass = AppManager.Instance.settings.PiloteWeight;
+        //body.mass = AppManager.Instance.settings.PiloteWeight;
     }
 
     private void Update()
@@ -32,8 +27,9 @@ public class Pilote : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        //body.centerOfMass = body.transform.InverseTransformDirection( body.position+ new Vector3(MassControl, 0f, 0f) - body.transform.position);
-        //Debug.DrawLine( body.position, body.worldCenterOfMass, Color.red );
+        body.centerOfMass = body.transform.InverseTransformDirection(body.position + new Vector3(MassControl, 0f, 0f) - body.transform.position);
+        //body.centerOfMass = new Vector3(MassControl, 0f, 0f);
+        Debug.DrawLine( body.position, body.worldCenterOfMass, Color.red );
 
         //speed = body.velocity;
 

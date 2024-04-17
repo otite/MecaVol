@@ -27,7 +27,7 @@ public class RFAUpdate : MonoBehaviour
     private float assiette;
     public float incidence = 7f;
     private float startFixedDeltaTime;
-    Vector3 Speed;
+    Vector3 CPSPeed;
     float initialPilote2GliderDistance;
 
     [Header( "Vectors 3d" )]
@@ -35,6 +35,7 @@ public class RFAUpdate : MonoBehaviour
     public Vector3D v3dSpeed;
     public Vector3D v3dPortance;
     public Vector3D v3dRFA;
+    public Vector3D v3dSCOMSpeed;
 
     [Header( "UI" )]
     public TextMeshProUGUI speedText;
@@ -72,11 +73,11 @@ public class RFAUpdate : MonoBehaviour
 
         if (Simulate)
         {
-            Speed = SimulatedSpeed;
+            CPSPeed = SimulatedSpeed;
         }
         else
         {
-            Speed = gliderBody.GetPointVelocity(CP.transform.position );
+            CPSPeed = gliderBody.GetPointVelocity(CP.transform.position );
         }
         //forces centrifuges
         //fcentrigue = mass*w*w*R
@@ -98,8 +99,13 @@ public class RFAUpdate : MonoBehaviour
         Vector3 gliderMassVector = gliderBody.mass * -Vector3.up;
         float gliderApparentMass =  Vector3.Project( gliderMassVector, gliderBody.position - piloteBody.position ).magnitude + forceCentrifugeG;
         apparentGW.text = gliderApparentMass.ToString();
+        //todo placement world space
         SCOM2GliderJoint.connectedAnchor = new Vector3(0, -initialPilote2GliderDistance * ( piloteApparentMass / ( gliderApparentMass + piloteApparentMass ) ), 0);
         Pilote2SCOMJoint.connectedAnchor = new Vector3(0, -initialPilote2GliderDistance * ( gliderApparentMass / ( gliderApparentMass + piloteApparentMass ) ), 0);
+
+
+        //centerOfMassBody.centerOfMass = centerOfMassBody.transform.InverseTransformDirection((piloteBody.worldCenterOfMass + (gliderApparentMass / (gliderApparentMass + piloteApparentMass)) * (gliderBody.position - piloteBody.worldCenterOfMass)) - centerOfMassBody.position);
+
         //SCOM2GliderJoint.connectedMassScale = gliderApparentMass/AppManager.Instance.settings.GliderWeight;
         //Pilote2SCOMJoint.massScale = piloteApparentMass / AppManager.Instance.settings.PiloteWeight;
 
@@ -112,20 +118,21 @@ public class RFAUpdate : MonoBehaviour
         
 
         roulis = Vector3.SignedAngle(gliderBody.transform.up, Vector3.ProjectOnPlane(Vector3.up, gliderBody.transform.forward), gliderBody.transform.forward);
-        incidence = Vector3.SignedAngle(ComputedCorde, Vector3.ProjectOnPlane(Speed, gliderBody.transform.right), gliderBody.transform.right);
+        incidence = Vector3.SignedAngle(ComputedCorde, Vector3.ProjectOnPlane(CPSPeed, gliderBody.transform.right), gliderBody.transform.right);
         
         CP.UpdatePosition( incidence, roulis );
         
         float Cz = AppManager.Instance.settings.GliderCzI.Evaluate(incidence);
         float Cx = AppManager.Instance.settings.GliderCxI.Evaluate(incidence);
 
-        float PortanceMag = 0.5f * AppManager.Instance.settings.AirDensity.Evaluate(AppManager.Instance.settings.AirTemperature) * AppManager.Instance.settings.GliderSurface * Speed.magnitude * Speed.magnitude * Cz;
-        float TraineeMag = 0.5f * AppManager.Instance.settings.AirDensity.Evaluate(AppManager.Instance.settings.AirTemperature) * AppManager.Instance.settings.GliderSurface * Speed.magnitude * Speed.magnitude * Cx;
+        float PortanceMag = 0.5f * AppManager.Instance.settings.AirDensity.Evaluate(AppManager.Instance.settings.AirTemperature) * AppManager.Instance.settings.GliderSurface * CPSPeed.magnitude * CPSPeed.magnitude * Cz;
+        float TraineeMag = 0.5f * AppManager.Instance.settings.AirDensity.Evaluate(AppManager.Instance.settings.AirTemperature) * AppManager.Instance.settings.GliderSurface * CPSPeed.magnitude * CPSPeed.magnitude * Cx;
         //float RFAMag = Mathf.Sqrt(PortanceMag * PortanceMag + TraineeMag * TraineeMag);
 
+        gliderBody.drag = TraineeMag / 9.81f;
 
-        Trainee = -Speed.normalized * TraineeMag;
-        Portance = Vector3.Cross( Speed, gliderBody.transform.right ).normalized * PortanceMag;
+        Trainee = -CPSPeed.normalized * TraineeMag;
+        Portance = Vector3.Cross( CPSPeed, gliderBody.transform.right ).normalized * PortanceMag;
         ComputedRFA = Portance + Trainee;// -pilote.ApparentMassVector.normalized * RFAMag;
 
        
@@ -138,10 +145,10 @@ public class RFAUpdate : MonoBehaviour
         {
             gliderBody.AddForceAtPosition(ComputedRFA, CP.transform.position, ForceMode.Force);
 
-            gliderBody.AddForceAtPosition(-ComputedCorde.normalized * LeftBrake * Speed.magnitude * Speed.magnitude, RightBrakePoint.position, ForceMode.Force);
+            //gliderBody.AddForceAtPosition(-ComputedCorde.normalized * RightBrake * Speed.magnitude * Speed.magnitude, RightBrakePoint.position, ForceMode.Force);
             //gliderBody.AddTorque(gliderBody.transform.up * RightBrake );
 
-            gliderBody.AddForceAtPosition(-ComputedCorde.normalized * LeftBrake * Speed.magnitude * Speed.magnitude, LeftBrakePoint.position, ForceMode.Force);
+            //gliderBody.AddForceAtPosition(-ComputedCorde.normalized * LeftBrake * Speed.magnitude * Speed.magnitude, LeftBrakePoint.position, ForceMode.Force);
             //gliderBody.AddTorque(gliderBody.transform.up * -LeftBrake);
 
 
@@ -151,11 +158,11 @@ public class RFAUpdate : MonoBehaviour
 
 
         v3dDrag.values = Trainee;
-        v3dSpeed.values = Speed;
+        v3dSpeed.values = CPSPeed;
         v3dPortance.values = Portance;
         v3dRFA.values = ComputedRFA;
-
-        speedText.text = (Speed.magnitude * 3.6f).ToString() + " km/h";
+        v3dSCOMSpeed.values = centerOfMassBody.velocity;
+        speedText.text = (CPSPeed.magnitude * 3.6f).ToString() + " km/h";
         incidenceTxt.text = "Incidence : " + incidence.ToString();
         roulisTxt.text = "Roulis : " + roulis.ToString();
     }
