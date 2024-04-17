@@ -76,11 +76,31 @@ public class RFAUpdate : MonoBehaviour
         {
             Speed = gliderBody.velocity;// GetPointVelocity(CP.transform.position );
         }
-        SCOM2GliderJoint.connectedAnchor = new Vector3(0, -initialPilote2GliderDistance * (piloteBody.mass / (gliderBody.mass + piloteBody.mass)), 0);
-        Pilote2SCOMJoint.connectedAnchor = new Vector3(0, -initialPilote2GliderDistance * (gliderBody.mass / (gliderBody.mass + piloteBody.mass)), 0);
+        //forces centrifuges
+        //fcentrigue = mass*w*w*R
+        //vitesse relative tangantielle par rapport au com
+        //pilote
+        Vector3 relativeSpeed = Vector3.ProjectOnPlane( piloteBody.velocity - centerOfMassBody.velocity, ( piloteBody.worldCenterOfMass - centerOfMassBody.position ).normalized );
+        float forceCentrifuge = piloteBody.mass * relativeSpeed.magnitude * relativeSpeed.magnitude / Vector3.Distance( piloteBody.worldCenterOfMass, centerOfMassBody.position );
+        Vector3 FCent = ( piloteBody.worldCenterOfMass - centerOfMassBody.position ).normalized * forceCentrifuge;
+        //glider
+        Vector3 relativeSpeedGlider = Vector3.ProjectOnPlane( gliderBody.velocity - centerOfMassBody.velocity, ( gliderBody.worldCenterOfMass - centerOfMassBody.position ).normalized );
+        float forceCentrifugeG = gliderBody.mass * relativeSpeedGlider.magnitude * relativeSpeedGlider.magnitude / Vector3.Distance( gliderBody.worldCenterOfMass, centerOfMassBody.position );
+        Vector3 FCentGlider = ( piloteBody.worldCenterOfMass - centerOfMassBody.position ).normalized * forceCentrifuge;
 
 
-        //systemCenterOfMass.body.MovePosition((pilote.body.worldCenterOfMass + (body.mass / (body.mass + pilote.body.mass)) * (body.position - pilote.body.worldCenterOfMass)));
+        //placement SCOM
+        Vector3 piloteMassVector = piloteBody.mass * -Vector3.up;
+        float piloteApparentMass =  Vector3.Project(piloteMassVector, gliderBody.position - piloteBody.position).magnitude + forceCentrifuge;
+
+        Vector3 gliderMassVector = gliderBody.mass * -Vector3.up;
+        float gliderApparentMass =  Vector3.Project( gliderMassVector, gliderBody.position - piloteBody.position ).magnitude + forceCentrifugeG;
+
+        SCOM2GliderJoint.connectedAnchor = new Vector3(0, -initialPilote2GliderDistance * ( piloteApparentMass / ( gliderApparentMass + piloteApparentMass ) ), 0);
+        Pilote2SCOMJoint.connectedAnchor = new Vector3(0, -initialPilote2GliderDistance * ( gliderApparentMass / ( gliderApparentMass + piloteApparentMass ) ), 0);
+
+
+        //centerOfMassBody.MovePosition(( piloteBody.worldCenterOfMass + ( gliderApparentMass / ( gliderApparentMass + piloteApparentMass ) ) * ( gliderBody.position - piloteBody.worldCenterOfMass)));
         //body.centerOfMass = body.transform.InverseTransformDirection(body.position - systemCenterOfMass.body.position);
 
 
@@ -90,7 +110,7 @@ public class RFAUpdate : MonoBehaviour
 
         roulis = Vector3.SignedAngle(gliderBody.transform.up, Vector3.ProjectOnPlane(Vector3.up, gliderBody.transform.forward), gliderBody.transform.forward);
         incidence = Vector3.SignedAngle(ComputedCorde, Vector3.ProjectOnPlane(Speed, gliderBody.transform.right), gliderBody.transform.right);
-        //CP.UpdatePosition( incidence, roulis );
+        CP.UpdatePosition( incidence, roulis );
         float Cz = AppManager.Instance.settings.GliderCzI.Evaluate(incidence);
         float Cx = AppManager.Instance.settings.GliderCxI.Evaluate(incidence);
 
