@@ -14,9 +14,9 @@ public class RFAUpdate : MonoBehaviour
     public CentrePoussee CP;
     public Transform CordeFuite, CordeAttaque, RightBrakePoint, LeftBrakePoint;
     public float InitialSpeed = 8;
-    [Range(0,500)]
+    [Range(0,5)]
     public float RightBrake;
-    [Range(0, 500)]
+    [Range(0, 5)]
     public float LeftBrake;
     public float roulis;
 
@@ -40,6 +40,8 @@ public class RFAUpdate : MonoBehaviour
     public TextMeshProUGUI speedText;
     public TextMeshProUGUI incidenceTxt;
     public TextMeshProUGUI roulisTxt;
+    public TextMeshProUGUI apparentPW;
+    public TextMeshProUGUI apparentGW;
 
     [Header("Simulate")]
     public bool Simulate;
@@ -74,7 +76,7 @@ public class RFAUpdate : MonoBehaviour
         }
         else
         {
-            Speed = gliderBody.velocity;// GetPointVelocity(CP.transform.position );
+            Speed = gliderBody.GetPointVelocity(CP.transform.position );
         }
         //forces centrifuges
         //fcentrigue = mass*w*w*R
@@ -91,14 +93,15 @@ public class RFAUpdate : MonoBehaviour
 
         //placement SCOM
         Vector3 piloteMassVector = piloteBody.mass * -Vector3.up;
-        float piloteApparentMass =  Vector3.Project(piloteMassVector, gliderBody.position - piloteBody.position).magnitude + forceCentrifuge;
-
+        float piloteApparentMass = Vector3.Project(piloteMassVector, gliderBody.position - piloteBody.position).magnitude + forceCentrifuge;
+        apparentPW.text = piloteApparentMass.ToString();
         Vector3 gliderMassVector = gliderBody.mass * -Vector3.up;
         float gliderApparentMass =  Vector3.Project( gliderMassVector, gliderBody.position - piloteBody.position ).magnitude + forceCentrifugeG;
-
+        apparentGW.text = gliderApparentMass.ToString();
         SCOM2GliderJoint.connectedAnchor = new Vector3(0, -initialPilote2GliderDistance * ( piloteApparentMass / ( gliderApparentMass + piloteApparentMass ) ), 0);
         Pilote2SCOMJoint.connectedAnchor = new Vector3(0, -initialPilote2GliderDistance * ( gliderApparentMass / ( gliderApparentMass + piloteApparentMass ) ), 0);
-
+        //SCOM2GliderJoint.connectedMassScale = gliderApparentMass/AppManager.Instance.settings.GliderWeight;
+        //Pilote2SCOMJoint.massScale = piloteApparentMass / AppManager.Instance.settings.PiloteWeight;
 
         //centerOfMassBody.MovePosition(( piloteBody.worldCenterOfMass + ( gliderApparentMass / ( gliderApparentMass + piloteApparentMass ) ) * ( gliderBody.position - piloteBody.worldCenterOfMass)));
         //body.centerOfMass = body.transform.InverseTransformDirection(body.position - systemCenterOfMass.body.position);
@@ -110,7 +113,9 @@ public class RFAUpdate : MonoBehaviour
 
         roulis = Vector3.SignedAngle(gliderBody.transform.up, Vector3.ProjectOnPlane(Vector3.up, gliderBody.transform.forward), gliderBody.transform.forward);
         incidence = Vector3.SignedAngle(ComputedCorde, Vector3.ProjectOnPlane(Speed, gliderBody.transform.right), gliderBody.transform.right);
+        
         CP.UpdatePosition( incidence, roulis );
+        
         float Cz = AppManager.Instance.settings.GliderCzI.Evaluate(incidence);
         float Cx = AppManager.Instance.settings.GliderCxI.Evaluate(incidence);
 
@@ -133,10 +138,10 @@ public class RFAUpdate : MonoBehaviour
         {
             gliderBody.AddForceAtPosition(ComputedRFA, CP.transform.position, ForceMode.Force);
 
-            //gliderBody.AddForceAtPosition(Vector3.Project(-ComputedCorde.normalized * RightBrake * Speed.magnitude, Trainee), RightBrakePoint.position, ForceMode.Force);
+            gliderBody.AddForceAtPosition(-ComputedCorde.normalized * LeftBrake * Speed.magnitude * Speed.magnitude, RightBrakePoint.position, ForceMode.Force);
             //gliderBody.AddTorque(gliderBody.transform.up * RightBrake );
 
-            //gliderBody.AddForceAtPosition(Vector3.Project(-ComputedCorde.normalized * LeftBrake * Speed.magnitude, Trainee), LeftBrakePoint.position, ForceMode.Force);
+            gliderBody.AddForceAtPosition(-ComputedCorde.normalized * LeftBrake * Speed.magnitude * Speed.magnitude, LeftBrakePoint.position, ForceMode.Force);
             //gliderBody.AddTorque(gliderBody.transform.up * -LeftBrake);
 
 
